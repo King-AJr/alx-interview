@@ -25,4 +25,7 @@ def minOperations(n: int) -> int:
         else:
             result = result + i
         i += 1
-    return i
+    add: int = n / 10
+    if add > 1:
+        i += add
+    return int(i)
