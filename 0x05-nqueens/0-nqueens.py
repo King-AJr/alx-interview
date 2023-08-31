@@ -27,8 +27,8 @@ def place_queen(queen_row, board_size, prev_solutions):
 def is_safe(row, column, solution):
     """Check if placing a queen at
     the given position is safe."""
-    return column not in solution and all(abs(solution[col] -\
-                                              column) != row - col for col in range(row))
+    return column not in solution and \
+        all(abs(solution[col] - column) != row - col for col in range(row))
 
 
 def init():
@@ -37,17 +37,17 @@ def init():
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-    
+
     try:
         board_size = int(sys.argv[1])
     except ValueError:
         print("N must be a number")
         sys.exit(1)
-    
+
     if board_size < 4:
         print("N must be at least 4")
         sys.exit(1)
-    
+
     return board_size
 
 
