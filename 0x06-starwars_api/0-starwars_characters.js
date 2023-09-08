@@ -1,57 +1,45 @@
 #!/usr/bin/node
 
 const request = require('request');
-const async = require('async');
 
-function fetchCharacterNames(movieId) {
-  const movieEndpoint = `https://swapi-api.alx-tools.com/api/films/${movieId}`;
-  
-  request(movieEndpoint, (error, response, body) => {
+// Get the movie ID from the command-line argument
+const movieId = process.argv[2];
+
+// Define the movie endpoint URL
+const movieEndpoint = 'https://swapi-api.alx-tools.com/api/films/' + movieId;
+
+// Function to send requests to retrieve character names
+function sendRequest(characterUrls, index) {
+  // Check if all character URLs have been processed
+  if (characterUrls.length === index) {
+    return;
+  }
+
+  // Send a request to fetch character data
+  request(characterUrls[index], (error, response, body) => {
     if (error) {
-      console.error(`Error fetching movie data: ${error.message}`);
-      return;
-    }
+      console.log(error);
+    } else {
+      // Parse the character data and print the name
+      const characterData = JSON.parse(body);
+      console.log(characterData.name);
 
-    try {
-      const movieData = JSON.parse(body);
-      const characterUrls = movieData.characters;
-
-      if (!characterUrls || characterUrls.length === 0) {
-        console.log('No character data found for this movie.');
-        return;
-      }
-
-      async.each(
-        characterUrls,
-        (characterUrl, callback) => {
-          request(characterUrl, (error, response, body) => {
-            if (error) {
-              console.error(`Error fetching character data: ${error.message}`);
-              callback();
-            } else {
-              const characterData = JSON.parse(body);
-              console.log(characterData.name);
-              callback();
-            }
-          });
-        },
-        (err) => {
-          if (err) {
-            console.error(`Error: ${err}`);
-          }
-        }
-      );
-    } catch (error) {
-      console.error(`Error parsing movie data: ${error.message}`);
+      // Recursively call sendRequest for the next character
+      sendRequest(characterUrls, index + 1);
     }
   });
 }
 
-// Check if a movie ID is provided as a command-line argument
-if (process.argv.length !== 3) {
-  console.log('Usage: node swapi_characters.js <Movie ID>');
-  process.exit(1);
-}
+// Send a request to retrieve movie data
+request(movieEndpoint, (error, response, body) => {
+  if (error) {
+    console.log(error);
+  } else {
+    // Parse the movie data and extract character URLs
+    const movieData = JSON.parse(body);
+    const characterUrls = movieData.characters;
 
-const movieId = process.argv[2];
-fetchCharacterNames(movieId);
+    // Start fetching character names
+    sendRequest(characterUrls, 0);
+  }
+});
