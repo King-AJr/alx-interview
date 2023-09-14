@@ -1,2 +1,1 @@
-# alx-interview
-preparation for interviews
+alx task on 2d matrix
