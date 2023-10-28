@@ -4,6 +4,7 @@ given a numver of boxes
  determines if all the boxes can be opened.
 """
 
+
 def canUnlockAll(boxes):
     """
     You have n number of locked boxes in front of you.
